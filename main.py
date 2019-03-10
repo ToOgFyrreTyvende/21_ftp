@@ -1,25 +1,15 @@
-import socket
+import ftp
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print("Socket Created")
-port = 2121
-host = "127.0.0.1"
-ip = socket.gethostbyname(host)
+END = '\r\n'
 
-print(ip)
-print("ip of " +host+ " is " +ip)
 
-s.connect ((ip, port))
-print("Socket Connected to "+host+" on ip "+ ip)
-
-reply = ''
-while True:
-    message = "LIST\r\n"
-    reply += str(s.recv(1024))
-    if not reply:
-        break
-    if '220 Only anonymous FTP is allowed here' in reply:
-        s.sendall(message)
-        break    
-reply += s.recv(65535)
-print(reply)
+ftp_client = ftp.FTPClient("127.0.0.1", 2121)
+ftp_client.connect()
+ftp_client.login()
+print(ftp_client.retrlines("LIST"))
+print(ftp_client.retrlines("RETR test"))
+print(ftp_client.send_cmd("CWD testdir"))
+print(ftp_client.retrlines("RETR test2"))
+file = open("uploadtest", "r")
+print(ftp_client.storlines("STOR uploadedfile", file))
+print(ftp_client.retrlines("LIST"))
