@@ -10,6 +10,9 @@ import os.path
 MAXLINE = 8192
 CRLF = '\r\n'
 B_CRLF = b'\r\n'
+
+# The FTP specication is in RFC 959
+# https://tools.ietf.org/html/rfc959#section-7 
 class FTPClient():
     host = ""
     port = 21
@@ -20,18 +23,25 @@ class FTPClient():
         self.host = host
         self.port = port
 
+    # Connecting the way FTPLib does. We use makefile, such that reading/writing to hte socket
+    # is more "pythonic"
     def connect(self):
         address = self.host
         port = self.port
         try:
-            create_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            create_socket.connect((address, port))
+            #We connect to a TCP socket on (addres, port)
+            _socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            _socket.connect((address, port))
             print("\nConnection to server has been established on port %s ." % port)
         except socket.error as socket_error:
             print("Socket Error: %s" % socket_error)
             return
-        self.ftp_socket = create_socket
+        # FTP is a class, so we assign the connected socket to the attribute in the class
+        self.ftp_socket = _socket
+        # We use makefile to wrap the communication in a python file object
         self.file = self.ftp_socket.makefile('r', encoding="latin-1")
+        # When we initially connect to the FTP client, the FTP client sends a greeting repsonse
+        # we clear this from the file buffer and throw it into the void 
         self.getresp()
  
     def login(self,):
@@ -136,6 +146,7 @@ class FTPClient():
             af, socktype, proto, canonname, sa = res
             try:
                 sock = socket.socket(af, socktype, proto)
+                print(sa)
                 sock.bind(sa)
             except OSError as _:
                 err = _
