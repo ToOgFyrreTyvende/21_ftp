@@ -1,7 +1,4 @@
-import ftp
-
-END = '\r\n'
-
+import ftpclient as ftp
 
 ftp_client = ftp.FTPClient("127.0.0.1", 2121)
 ftp_client.connect()
