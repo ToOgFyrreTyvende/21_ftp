@@ -48,8 +48,6 @@ class FTPClient():
         resp = self.send_cmd('USER ' + user)
         if resp[0] == '3':
             resp = self.send_cmd('PASS ' + passwd)
-        if resp[0] == '3':
-            resp = self.send_cmd('ACCT ' + acct)
         if resp[0] != '2':
             raise ValueError("Could not log in! " + str(resp))
         return resp
