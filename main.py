@@ -1,4 +1,7 @@
 import ftpclient as ftp
+import os
+if not os.path.exists("client-output"):
+    os.makedirs("client-output")
 
 ftp_client = ftp.FTPClient("127.0.0.1", 2121)
 ftp_client.connect()
