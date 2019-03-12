@@ -112,17 +112,22 @@ class FTPClient():
         with self.transfercmd(cmd) as conn, conn.makefile('r', encoding="latin1") as fp:
             acc_bytes = 1
             split_cmd = cmd.split()
-            if len(split_cmd) == 2:
+            possible_file = None
+            if len(split_cmd) == 2 and split_cmd[0] == "RETR":
+                possible_file = open("./client-output/" +  split_cmd[1],"w+")
                 print("Starting file print of file " + split_cmd[1])
             while 1:
                 line = fp.readline(MAXBYTES)
-                if not line or acc_bytes > MAXBYTES:
+                if not line:
                     break
                 # If the accumulative number of bytes does not exceed 1024 (maxbytes)
                 # we print the file contents to terminal
                 if acc_bytes <= MAXBYTES:
                     print(repr(line)[0:(MAXBYTES-acc_bytes)])
                 # Same logic as in getline. We check if there is a line ending in the current data stream 
+                if possible_file:
+                     possible_file.write(line)
+
                 if line[-2:] == CRLF:
                     line = line[:-2]
                 elif line[-1:] == '\n':
